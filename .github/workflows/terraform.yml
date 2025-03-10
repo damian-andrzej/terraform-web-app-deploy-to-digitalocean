@@ -30,7 +30,7 @@ jobs:
 
       - name: validate terraform
         run: terraform validate
-        working-directory: terraform
+        working-directory: ./
 
       - name: Plan terraform
         env:
@@ -39,7 +39,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ACCESS_KEY_SECRET }}
         run: terraform apply -auto-approve
-        working-directory: terraform
+        working-directory: ./
 
       - name: Show droplet IP
         run: terraform output droplet_ip
