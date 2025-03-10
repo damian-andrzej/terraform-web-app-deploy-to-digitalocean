@@ -19,9 +19,14 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Init Terraform
-        run: terraform init
-        working-directory: ./
+      - name: Initialize Terraform
+        env:
+         ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+         ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
+        run: |
+          terraform init \
+            -backend-config="access_key=$AWS_ACCESS_KEY" \
+            -backend-config="secret_key=$AWS_SECRET_KEY"
 
       - name: validate terraform
         run: terraform validate
