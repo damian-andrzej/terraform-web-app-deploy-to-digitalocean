@@ -67,7 +67,13 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
 
+    - name: Add droplet SSH key to known_hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+
     # Run Ansible Playbook on the new droplet
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i "${{ secrets.DROPLET_IP }}," --private-key ~/.ssh/id_rsa -o StrictHostKeyChecking=no --user root ansible/application-config.yml
+        ansible-playbook -i "${{ secrets.DROPLET_IP }}," --private-key ~/.ssh/id_rsa --user root ansible/application-config.yml
