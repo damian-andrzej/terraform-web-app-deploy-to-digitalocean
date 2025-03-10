@@ -17,7 +17,7 @@ provider "digitalocean" {
 
 resource "digitalocean_droplet" "example" {
   name     = "github-actions-droplet"
-  region   = "nyc3"
+  region   = "fra1"
   size     = "s-1vcpu-512mb-10gb"
   image    = "ubuntu-22-04-x64"
   ssh_keys = [var.ssh]
@@ -33,5 +33,5 @@ variable "do_token" {
 
 variable "ssh" {
   description = "SSH Key Fingerprint"
-  type        = string
+  type = string
 }
