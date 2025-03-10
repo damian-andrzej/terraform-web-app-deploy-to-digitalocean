@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket = "s3-backend"               # Name of your DigitalOcean Space (S3 bucket)
     key= "terraform.tfstate"        # Path where Terraform state will be stored
-    region="fra1"                     # DigitalOcean region
+    region="us-east-1"                     # DigitalOcean region
     endpoint= "https://s3-backend.fra1.digitaloceanspaces.com"  # Endpoint URL for DigitalOcean Spaces
     skip_credentials_validation= true
     skip_metadata_api_check= true
