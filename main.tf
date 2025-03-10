@@ -5,6 +5,7 @@ terraform {
     region="us-east-1"                     # DigitalOcean region
     endpoint= "https://s3-backend.fra1.digitaloceanspaces.com"  # Endpoint URL for DigitalOcean Spaces
     skip_credentials_validation= true
+    skip_requesting_account_id = true
     skip_metadata_api_check= true
   }
 }
