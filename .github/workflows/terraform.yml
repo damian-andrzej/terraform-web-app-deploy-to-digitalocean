@@ -29,6 +29,8 @@ jobs:
             -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
 
       - name: validate terraform
+        env:
+          TF_VAR_ssh_fingerprint: ${{ secrets.SSH }}
         run: terraform validate
         working-directory: ./
 
