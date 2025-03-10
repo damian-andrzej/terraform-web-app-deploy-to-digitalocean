@@ -45,3 +45,29 @@ jobs:
 
       - name: Show droplet IP
         run: terraform output droplet_ip
+
+  ansible:
+    runs-on: ubuntu-latest
+    needs: terraform  # Ensure the droplet is provisioned before running Ansible
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Ansible
+    - name: Set up Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+
+    # Set up SSH keys
+    - name: Set up SSH private key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    # Run Ansible Playbook on the new droplet
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook -i "${{ secret.DROPLET_IP }}" --private-key ~/.ssh/id_rsa --user root ansible/playbook.yml
