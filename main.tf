@@ -28,7 +28,7 @@ resource "digitalocean_droplet" "example" {
   region= "fra1"
   size= "s-1vcpu-512mb-10gb"
   image= "ubuntu-22-04-x64"
-  ssh_keys= [var.TF_VAR_ssh_fingerprint]
+  ssh_keys= [var.ssh_fingerprint]
   backups = false
   monitoring = false
 }
