@@ -33,6 +33,10 @@ resource "digitalocean_droplet" "example" {
   monitoring = false
 }
 
+output "droplet_ip" {
+  value = digitalocean_droplet.example.ipv4_address
+}
+
 variable "do_token" {
   description = "DigitalOcean API token"
   type= string
