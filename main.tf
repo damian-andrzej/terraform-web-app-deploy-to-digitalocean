@@ -4,6 +4,9 @@ terraform {
       source = "digitalocean/digitalocean"
       version = "~> 2.0"  # You can specify the version you need
     }
+}
+
+terraform {
   backend "s3" {
     bucket = "s3-backend"               # Name of your DigitalOcean Space (S3 bucket)
     key= "terraform.tfstate"        # Path where Terraform state will be stored
