@@ -1,0 +1,8 @@
+---
+- name: Configure DigitalOcean Droplet
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Run the echo
+      command: echo "essa dziala"
