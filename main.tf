@@ -4,8 +4,8 @@ terraform {
     key= "terraform.tfstate"        # Path where Terraform state will be stored
     region="fra1"                     # DigitalOcean region
     endpoint= "https://s3-backend.fra1.digitaloceanspaces.com"  # Endpoint URL for DigitalOcean Spaces
-    access_key= var.s3_access_key          # Access key from your GitHub Secrets
-    secret_key= var.s3_secret_key          # Secret key from your GitHub Secrets
+    access_key= var.access_key_id          # Access key from your GitHub Secrets
+    secret_key= var.access_key_secret          # Secret key from your GitHub Secrets
     skip_credentials_validation= true
     skip_metadata_api_check= true
   }
