@@ -39,7 +39,7 @@ variable "do_token" {
   sensitive = true
 }
 
-variable "ssh" {
+variable "ssh_fingerprint" {
   description = "SSH Key Fingerprint"
   type = string
 }
