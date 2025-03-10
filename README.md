@@ -1,51 +1,57 @@
-steps to do 
+The purpose of this repo is to deploy python web app to digital ocean droplet by terraform, then set appropriate config to machine by ansible.
 
-make folder for workflows and create terraform.yml
-check if works.
+
+
+### Backend setup
+
+To configure online Digital Ocean place to store state for terraform file we need to hustle a bit
+Terraform libs are compatible with AWS S3 but there are some tricks:
+- we need to explicitly specific provider
+
+```hcl
+terraform {
+  required_providers {
+    digitalocean = {
+      source = "digitalocean/digitalocean"
+      version = "~> 2.0"  # You can specify the version you need
+    }
+}
+```
+
+- we declare it just like s3 bucket but its not, so region need to be selected
+- terraform lib need to validate us by user id, we need to omit it by those parameters
+  
+```hcl
+    region="us-east-1"                     # fake AWS reference
+    skip_credentials_validation= true
+    skip_requesting_account_id = true
+    skip_metadata_api_check= true
+
+```
+
+- we are obligated to use AWS S3 bucket variables names in INIT process(terraform.yaml)
 
 ```yaml
-name: Terraform Apply
-
-on:
-  push:
-    branches:
-      - main  # Trigger on push to the main branch
-
-jobs:
-  terraform:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Set up Terraform
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-
-      # Cache Terraform providers
-      - name: Cache Terraform providers
-        uses: actions/cache@v2
-        with:
-          path: ~/.terraform.d/plugin-cache
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
-
-      # Initialize Terraform
-      - name: Terraform Init
-        run: terraform init
-
-      # Run Terraform plan (optional)
-      - name: Terraform Plan
-        run: terraform plan
-
-      # Run Terraform apply
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+- name: Initialize Terraform
         env:
-          # Reference GitHub secret containing SSH fingerprint
-          SSH: ${{ secrets.SSH}}
-          DIGITALOCEAN_TOKEN: ${{ secrets.TOKEN }}
+         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.ACCESS_KEY_SECRET }}
+        run: |
+          terraform init \
+            -backend-config="access_key=$AWS_ACCESS_KEY_ID" \
+            -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
+
+      - name: validate terraform
+        env:
+          TF_VAR_ssh_fingerprint: ${{ secrets.SSH }}
+        run: terraform validate
+        working-directory: ./
+
+      - name: Plan terraform
+        env:
+          TF_VAR_do_token: ${{ secrets.TOKEN }}
+          TF_VAR_ssh_fingerprint: ${{ secrets.SSH }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ACCESS_KEY_SECRET }}
 ```
+
