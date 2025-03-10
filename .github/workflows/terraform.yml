@@ -70,4 +70,4 @@ jobs:
     # Run Ansible Playbook on the new droplet
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i "${{ secrets.DROPLET_IP }}" --private-key ~/.ssh/id_rsa --user root ansible/application-config.yml
+        ansible-playbook -i "${{ secrets.DROPLET_IP }}," --private-key ~/.ssh/id_rsa --user root ansible/application-config.yml
