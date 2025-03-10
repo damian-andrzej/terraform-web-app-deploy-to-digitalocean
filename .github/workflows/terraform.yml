@@ -25,8 +25,8 @@ jobs:
          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
         run: |
           terraform init \
-            -backend-config="access_key=$AWS_ACCESS_KEY" \
-            -backend-config="secret_key=$AWS_SECRET_KEY"
+            -backend-config="access_key=$ACCESS_KEY_ID" \
+            -backend-config="secret_key=$ACCESS_KEY_SECRET"
 
       - name: validate terraform
         run: terraform validate
