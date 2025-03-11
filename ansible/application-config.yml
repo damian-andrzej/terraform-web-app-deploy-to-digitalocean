@@ -24,9 +24,18 @@
         state: present
         update_cache: yes
 
-    - name: Add Docker GPG key
+    - name: Check if gpg key exists
+      stat:
+        path: /usr/share/keyrings/docker-archive-keyring.gpg
+      register: docker_gpg_key
+
+    - name: Add Docker GPG key if not present
       ansible.builtin.shell: |
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      when: not docker_gpg_key.stat.exists
+      notify:
+        - Update apt cache   # handler
+        
 
     - name: Add Docker repository
       ansible.builtin.shell: |
@@ -124,3 +133,8 @@
       command: docker-compose up -d
       args:
         chdir: /root/app
+
+  handlers:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
