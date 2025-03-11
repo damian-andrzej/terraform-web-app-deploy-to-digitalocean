@@ -1,4 +1,4 @@
-The purpose of this repo is to deploy python web app to digital ocean droplet by terraform, then set appropriate config to machine by ansible.
+The purpose of this repo is to deploy python web application to digital ocean droplet by terraform, then set appropriate config to machine by ansible.
 
 
 
