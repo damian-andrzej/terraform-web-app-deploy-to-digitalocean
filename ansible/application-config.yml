@@ -8,7 +8,7 @@
     app_dir: /root/app
   tasks:
     - name: Update apt packages
-      yum:
+      apt:
         update_cache: yes
 
     - name: Install required system packages
