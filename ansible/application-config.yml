@@ -2,7 +2,108 @@
 - name: Configure DigitalOcean Droplet
   hosts: all
   become: true
-
+  vars:
+    repo_name: terraform-web-app-deploy-to-digitalocean
+    repo_url: https://github.com/damian-andrzej/terraform-web-app-deploy-to-digitalocean.git
+    app_dir: /root/app
   tasks:
-    - name: Run the echo
-      command: echo "essa dziala"
+    - name: Update apt packages
+      yum:
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - lvm2
+          - git
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker
+        state: present
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add root to the docker group
+      user:
+        name: root-user
+        groups: docker
+        append: yes
+
+    - name: Download latest Docker Compose binary
+      get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64"
+        dest: "/usr/local/bin/docker-compose"
+        mode: 'u+x,g+x'
+
+    - name: Verify Docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Verify Docker Compose installation
+      command: docker-compose --version
+      register: docker_compose_version
+      changed_when: false
+
+    - name: Print Docker version
+      debug:
+        msg: "Installed Docker version: {{ docker_version.stdout }}"
+
+    - name: Print Docker Compose version
+      debug:
+        msg: "Installed Docker Compose version: {{ docker_compose_version.stdout }}"
+        
+
+    - name: Ensure the directory exists
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+
+    - name: Print Repository URL
+      debug:
+        msg: "The repository URL is {{ repo_url }}"
+
+    - name: Check if the directory exists
+      stat:
+        path: "{{ app_dir + '/' + repo_name }}"
+      register: dir_status
+
+    - name: Clone repository if the directory doesnt exist
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: "main"
+      when: dir_status.stat.exists == False
+
+    - name: Pull the latest changes if the directory exists
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: "main"
+        update: yes
+      when: dir_status.stat.exists == True
+
+  #  - name: Clone or update the repository
+  #    git:
+  #      repo: "{{ repo_url }}"  # Repository URL
+  #      dest: "{{ app_dir }}"                            # Target directory
+  #      version: "main"                                  # Branch name (default: main)
+  #      update: yes
+        
+    # Run docker-compose up
+    - name: Start containers using docker-compose
+      command: docker-compose up -d
+      args:
+        chdir: /root/app
