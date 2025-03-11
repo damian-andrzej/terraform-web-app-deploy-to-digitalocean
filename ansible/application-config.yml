@@ -31,7 +31,14 @@
         creates: /usr/share/keyrings/docker-archive-keyring.gpg
         
     - name: Add Docker repository
-      shell: add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: update packages
+      apt:
+        update_cache: yes
 
     - name: Install Docker
       apt:
