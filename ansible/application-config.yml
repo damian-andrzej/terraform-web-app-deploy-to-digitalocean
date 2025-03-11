@@ -11,7 +11,7 @@
       apt:
         update_cache: yes
 
-    - name: Install required system packages
+    - name: Install required system package
       apt:
         name: 
           - apt-transport-https
