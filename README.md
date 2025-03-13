@@ -1,7 +1,7 @@
 
 # Automation of app deployment to the cloud 
 
-The purpose of this repo is to deploy python web application to digital ocean droplet by terraform, then set appropriate config to machine by ansible.
+
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ The purpose of this repo is to deploy python web application to digital ocean dr
 
 ## Description
 
-Provide a more detailed explanation of the project. What problem does it solve? Why did you create it? Include any additional context or information that will help others understand your project.
+The purpose of this repo is to deploy python web application to digital ocean droplet by terraform, then set appropriate config to machine by ansible.
 
 ## Prerequisites
 
@@ -175,5 +175,5 @@ Propage below config:
 pg_hba.conf: Ensure it's configured to allow TCP/IP connections:
 
 
-host    all             all             0.0.0.0/0               md5
+host    all             all             0.0.0.0/0               trust
 host    all             all             ::/0                    md5
