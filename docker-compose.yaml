@@ -7,7 +7,7 @@ services:
       - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ~/postgres_config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - /root/app/postgres_config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     ports:
       - "5432:5432"
     command: ["postgres", "-c", "hba_file=/var/lib/postgresql/data/pg_hba.conf"]
