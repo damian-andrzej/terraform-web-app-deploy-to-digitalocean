@@ -167,13 +167,157 @@ Next, the playbook ensures the directory for the application exists and checks i
 
 The file is accessible under ansible/application-config.yml
 
-WHAT to do 
+```yaml
+---
+- name: Configure DigitalOcean Droplet
+  hosts: all
+  become: true
+  vars:
+    repo_name: terraform-web-app-deploy-to-digitalocean
+    repo_url: https://github.com/damian-andrzej/terraform-web-app-deploy-to-digitalocean.git
+    app_dir: /root/app
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
 
-edit a postgres container to enable web and db container to communicatate
-Propage below config: 
+    - name: Install required system packages
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - lvm2
+          - git
+          - unzip
+        state: present
+        update_cache: yes
 
-pg_hba.conf: Ensure it's configured to allow TCP/IP connections:
+    - name: Check if gpg key exists
+      stat:
+        path: /usr/share/keyrings/docker-archive-keyring.gpg
+      register: docker_gpg_key
 
+    - name: Add Docker GPG key if not present
+      ansible.builtin.shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      when: not docker_gpg_key.stat.exists
+      notify:
+        - Update apt cache   # handler
+        
 
-host    all             all             0.0.0.0/0               trust
-host    all             all             ::/0                    md5
+    - name: Add Docker repository
+      ansible.builtin.shell: |
+        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: Install Docker and Docker Compose
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: update packages
+      apt:
+        update_cache: yes
+
+    - name: Add root to the docker group
+      user:
+        name: root
+        groups: docker
+        append: yes
+
+    - name: Download latest Docker Compose binary
+      get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64"
+        dest: "/usr/local/bin/docker-compose"
+        mode: 'u+x,g+x'
+
+    - name: Verify Docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Verify Docker Compose installation
+      command: docker-compose --version
+      register: docker_compose_version
+      changed_when: false
+
+    - name: Print Docker version
+      debug:
+        msg: "Installed Docker version: {{ docker_version.stdout }}"
+
+    - name: Print Docker Compose version
+      debug:
+        msg: "Installed Docker Compose version: {{ docker_compose_version.stdout }}"
+        
+
+    - name: Ensure the directory exists
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+
+    - name: Print Repository URL
+      debug:
+        msg: "The repository URL is {{ repo_url }}"
+
+    - name: Check if the directory exists
+      stat:
+        path: "{{ app_dir + '/' + repo_name }}"
+      register: dir_status
+
+    - name: Clone repository if the directory doesnt exist
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: "main"
+        force: yes
+      when: dir_status.stat.exists == False
+
+    - name: Pull the latest changes if the directory exists
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: "main"
+        update: yes
+      when: dir_status.stat.exists == True
+
+    - name: add env file
+      copy:
+        dest: "{{ app_dir + '/' + '.env' }}"
+        content: |
+          POSTGRES_USER=admin
+          POSTGRES_PASSWORD=mypassword
+          POSTGRES_DB=flask_db
+
+    # content will be moved to github secrets soon, dont worry
+        
+
+  #  - name: Clone or update the repository
+  #    git:
+  #      repo: "{{ repo_url }}"  # Repository URL
+  #      dest: "{{ app_dir }}"                            # Target directory
+  #      version: "main"                                  # Branch name (default: main)
+  #      update: yes
+        
+    # Run docker-compose up
+    - name: Start containers using docker-compose
+      command: docker-compose up -d
+      args:
+        chdir: /root/app
+
+  handlers:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+```
