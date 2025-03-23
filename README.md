@@ -292,17 +292,7 @@ The file is accessible under ansible/application-config.yml
         update: yes
       when: dir_status.stat.exists == True
 
-    - name: add env file
-      copy:
-        dest: "{{ app_dir + '/' + '.env' }}"
-        content: |
-          POSTGRES_USER=admin
-          POSTGRES_PASSWORD=mypassword
-          POSTGRES_DB=flask_db
-
-    # content will be moved to github secrets soon, dont worry
         
-
   #  - name: Clone or update the repository
   #    git:
   #      repo: "{{ repo_url }}"  # Repository URL
