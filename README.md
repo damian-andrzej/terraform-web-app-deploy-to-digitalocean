@@ -40,7 +40,7 @@ Follow these steps to get the development environment running on your local mach
 
    - ACCESS_KEY_ID  Its you S3 credential to configure backend. Its specific for each cloud provided, always stored in bucket settings
    - ACCESS_KEY_SECRET Same as above just its a secret part of credentials not only ID
-   - SSH This credential is used to access a host(VM) For AWS its ssh_key, for DigitalOcean its ssh_fingerpring
+   - SSH This credential is used to access a host(VM) For AWS its ssh_key, for DigitalOcean its ssh_fingerprint
    - SSH_PRIVATE_KEY authorization pass for our ansible host that will propagate config
    - TOKEN its extra security layer from Digital Ocean, verifing access to account by external resources
    - 
