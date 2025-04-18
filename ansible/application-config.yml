@@ -44,9 +44,9 @@
     - name: Install Docker and Docker Compose
       apt:
         name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+         #- docker-ce
+         # - docker-ce-cli
+         # - containerd.io
           - docker-compose-plugin
         state: present
         update_cache: yes
