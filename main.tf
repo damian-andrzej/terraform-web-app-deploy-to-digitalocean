@@ -26,7 +26,7 @@ provider "digitalocean" {
 resource "digitalocean_droplet" "example" {
   name= "github-actions-droplet"
   region= "fra1"
-  size= "s-1vcpu-1gb-25gb"
+  size= "s-1vcpu-1gb"
   image= "ubuntu-22-04-x64"
   ssh_keys= [var.ssh_fingerprint]
   backups = false
