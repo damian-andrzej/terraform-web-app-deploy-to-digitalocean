@@ -22,7 +22,7 @@ The purpose of this repo is to deploy python web application to digital ocean dr
 
 List the tools, dependencies, and software needed to run your project. Be specific about versions if necessary.
 
-- **Cloud account** (for example DO or AWS)
+- **Cloud account** (for example Digital Ocean or AWS)
 - **Github account** 
 
 
